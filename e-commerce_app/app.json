@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "name": "e-commerce_app",
+    "slug": "e-commerce_app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/shopping-bag.png",
+    "scheme": "ecommerceapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/images/shopping-bag.png",
+        "backgroundImage": "./assets/images/shopping-bag.png",
+        "monochromeImage": "./assets/images/shopping-bag.png"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "backgroundColor": "#000000"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "daf10a1d-7570-4b7e-8c9b-a799042d4054"
+      }
+    }
+  }
+}
