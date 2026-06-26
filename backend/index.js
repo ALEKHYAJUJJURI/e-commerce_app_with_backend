@@ -9,6 +9,9 @@ const authRoutes =
   require("./routes/authRoutes");
   const userRoutes = require("./routes/userRoutes");
   const productRoutes = require("./routes/productRoutes");
+  const orderRoutes = require("./routes/orderRoutes");
+  const wishlistRoutes = require("./routes/wishlistRoutes");
+  
 
 const app = express();
 
@@ -27,6 +30,8 @@ mongoose
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/wishlist", wishlistRoutes);
 app.get("/", (req, res) => {
   res.send("Backend Running");
 });

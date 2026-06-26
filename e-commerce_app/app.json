@@ -11,7 +11,9 @@
     "ios": {
       "supportsTablet": true
     },
+    
     "android": {
+      "package": "com.alekhya_jujjuri.ecommerceapp",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/shopping-bag.png",

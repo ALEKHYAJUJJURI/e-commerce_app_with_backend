@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
   Alert,
@@ -11,12 +12,18 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { API_BASE_URL } from "../types/constants";
 import { Colors, Radius, Shadow, Spacing, Typography } from "../types/theme";
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { formatCurrency } from "../utils/formatCurrency";
+
 
 const CartScreen = () => {
-  const { cart, addToCart, decreaseQuantity, clearCart } = useCart();
+  const { cart, addToCart, decreaseQuantity, clearCart,removeFromCart } = useCart();
+  const { user } = useAuth();
   const navigation = useNavigation<any>();
 
   const subtotal = cart.reduce(
@@ -26,22 +33,50 @@ const CartScreen = () => {
   const shipping = subtotal > 0 ? (subtotal > 999 ? 0 : 49) : 0;
   const total = subtotal + shipping;
   const totalItems = cart.reduce((n: number, i: any) => n + i.quantity, 0);
+const handleCheckout = async () => {
+  try {
+    if (!user) {
+      Alert.alert(
+        "Login required",
+        "Please sign in to place your order."
+      );
+      return;
+    }
 
-  const handleCheckout = () => {
-    Alert.alert(
-      "Order placed! 🎉",
-      "Your order is confirmed. You'll receive a tracking link soon.",
-      [
-        {
-          text: "Continue Shopping",
-          onPress: () => {
-            clearCart();
-            navigation.goBack();
-          },
+    const token = await AsyncStorage.getItem("token");
+
+    console.log("TOKEN:", token);
+
+    const response = await axios.post(
+      `${API_BASE_URL}/api/orders`,
+      {
+        products: cart.map((item) => ({
+          product: item._id,
+          quantity: item.quantity,
+        })),
+        totalAmount: total,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      ],
+      }
     );
-  };
+
+    console.log("ORDER SUCCESS", response.data);
+
+    Alert.alert("Success", "Order placed successfully");
+
+    clearCart();
+
+    // navigation.navigate("MyOrders");
+  } catch (error: any) {
+    console.log(
+      "ORDER ERROR:",
+      error.response?.data || error.message
+    );
+  }
+};
 
   if (cart.length === 0) {
     return (
@@ -76,40 +111,52 @@ const CartScreen = () => {
     const imageUrl = item.image?.startsWith("http")
       ? item.image
       : `${API_BASE_URL}/uploads/${item.image}`;
-
     return (
       <View style={styles.card}>
         <View style={styles.imageWrap}>
           <Image source={{ uri: imageUrl }} style={styles.image} />
         </View>
-
         <View style={styles.info}>
           <Text numberOfLines={2} style={styles.itemTitle}>
             {item.title}
           </Text>
           <Text style={styles.itemCategory}>{item.category}</Text>
-          <Text style={styles.itemPrice}>₹{item.price}</Text>
+          <Text style={styles.itemPrice}>{formatCurrency(item.price)}</Text>
+         <View style={styles.qtyRow}>
+  <TouchableOpacity
+    style={styles.qtyBtn}
+    onPress={() => decreaseQuantity(item._id)}
+  >
+    <Ionicons name="remove" size={16} color={Colors.ink} />
+  </TouchableOpacity>
 
-          <View style={styles.qtyRow}>
-            <TouchableOpacity
-              style={styles.qtyBtn}
-              onPress={() => decreaseQuantity(item._id)}
-            >
-              <Ionicons name="remove" size={16} color={Colors.ink} />
-            </TouchableOpacity>
-            <Text style={styles.qtyValue}>{item.quantity}</Text>
-            <TouchableOpacity
-              style={styles.qtyBtn}
-              onPress={() => addToCart(item)}
-            >
-              <Ionicons name="add" size={16} color={Colors.ink} />
-            </TouchableOpacity>
+  <Text style={styles.qtyValue}>{item.quantity}</Text>
 
-            <View style={{ flex: 1 }} />
-            <Text style={styles.lineTotal}>
-              ₹{(item.price * item.quantity).toFixed(2)}
-            </Text>
-          </View>
+  <TouchableOpacity
+    style={styles.qtyBtn}
+    onPress={() => addToCart(item)}
+  >
+    <Ionicons name="add" size={16} color={Colors.ink} />
+  </TouchableOpacity>
+
+  <View style={{ flex: 1 }} />
+
+  <Text style={styles.lineTotal}>
+    {formatCurrency(item.price * item.quantity)}
+  </Text>
+</View>
+
+<TouchableOpacity
+  style={styles.removeBtn}
+  onPress={() => removeFromCart(item._id)}
+>
+  <Ionicons
+    name="trash-outline"
+    size={16}
+    color={Colors.danger}
+  />
+  <Text style={styles.removeText}>Remove</Text>
+</TouchableOpacity>
         </View>
       </View>
     );
@@ -117,13 +164,15 @@ const CartScreen = () => {
 
   return (
     <SafeAreaView style={styles.root}>
-      {/* ── Header ───────────────────────────────────── */}
-      <View style={styles.header}>
+      <LinearGradient
+        colors={[Colors.primary, Colors.primaryDark ?? "#1A1A2E"]}
+        style={styles.header}
+      >
         <TouchableOpacity
           style={styles.backBtn2}
           onPress={() => navigation.goBack()}
         >
-          <Ionicons name="chevron-back" size={22} color={Colors.ink} />
+          <Ionicons name="chevron-back" size={22} color={Colors.white} />
         </TouchableOpacity>
         <View>
           <Text style={styles.headerTitle}>My Bag</Text>
@@ -137,14 +186,26 @@ const CartScreen = () => {
         >
           <Text style={styles.clearText}>Clear</Text>
         </TouchableOpacity>
-      </View>
+      </LinearGradient>
 
-      {/* ── Free shipping banner ─────────────────────── */}
+      {!user && (
+        <View style={styles.guestBanner}>
+          <Ionicons
+            name="lock-closed-outline"
+            size={16}
+            color={Colors.warning}
+          />
+          <Text style={styles.guestBannerText}>
+            Sign in before checkout to complete your order
+          </Text>
+        </View>
+      )}
+
       {shipping > 0 ? (
         <View style={styles.shippingBanner}>
           <Ionicons name="rocket-outline" size={16} color={Colors.indigo} />
           <Text style={styles.shippingBannerText}>
-            Add ₹{(999 - subtotal).toFixed(0)} more for free delivery
+            Add {formatCurrency(999 - subtotal)} more for free delivery
           </Text>
         </View>
       ) : (
@@ -165,7 +226,6 @@ const CartScreen = () => {
         </View>
       )}
 
-      {/* ── Cart items ───────────────────────────────── */}
       <FlatList
         data={cart}
         keyExtractor={(item: any) => item._id}
@@ -174,11 +234,10 @@ const CartScreen = () => {
         showsVerticalScrollIndicator={false}
       />
 
-      {/* ── Order summary + CTA ──────────────────────── */}
       <View style={styles.footer}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Subtotal</Text>
-          <Text style={styles.summaryValue}>₹{subtotal.toFixed(2)}</Text>
+          <Text style={styles.summaryValue}>{formatCurrency(subtotal)}</Text>
         </View>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryLabel}>Delivery</Text>
@@ -188,20 +247,21 @@ const CartScreen = () => {
               shipping === 0 && { color: Colors.success },
             ]}
           >
-            {shipping === 0 ? "FREE" : `₹${shipping}`}
+            {shipping === 0 ? "FREE" : formatCurrency(shipping)}
           </Text>
         </View>
         <View style={[styles.summaryRow, styles.totalRow]}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>₹{total.toFixed(2)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(total)}</Text>
         </View>
-
         <TouchableOpacity
           style={styles.cta}
           onPress={handleCheckout}
           activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>Place Order</Text>
+          <Text style={styles.ctaText}>
+            {user ? "Place Order" : "Sign In to Checkout"}
+          </Text>
           <Ionicons name="arrow-forward" size={18} color={Colors.white} />
         </TouchableOpacity>
       </View>
@@ -214,30 +274,37 @@ export default CartScreen;
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.surfaceAlt },
 
-  /* Header */
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
-    backgroundColor: Colors.surface,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
+    borderBottomLeftRadius: Radius.lg,
+    borderBottomRightRadius: Radius.lg,
   },
   backBtn2: {
     width: 40,
     height: 40,
     borderRadius: Radius.full,
-    backgroundColor: Colors.surfaceAlt,
+    backgroundColor: "rgba(255,255,255,0.15)",
     alignItems: "center",
     justifyContent: "center",
   },
-  headerTitle: { ...Typography.h2, color: Colors.ink },
-  headerSub: { ...Typography.caption, color: Colors.inkLight },
+  headerTitle: { ...Typography.h2, color: Colors.white },
+  headerSub: { ...Typography.caption, color: "rgba(255,255,255,0.7)" },
   clearText: { ...Typography.labelM, color: Colors.accent },
 
-  /* Banner */
+  guestBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: "#FEF3C7",
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+  },
+  guestBannerText: { ...Typography.bodyS, color: "#92400E", flex: 1 },
+
   shippingBanner: {
     flexDirection: "row",
     alignItems: "center",
@@ -252,7 +319,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  /* List */
   list: { padding: Spacing.lg, paddingBottom: 8 },
   card: {
     flexDirection: "row",
@@ -294,11 +360,7 @@ const styles = StyleSheet.create({
     color: Colors.success,
     marginBottom: Spacing.sm,
   },
-  qtyRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
+  qtyRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   qtyBtn: {
     width: 30,
     height: 30,
@@ -317,7 +379,6 @@ const styles = StyleSheet.create({
   },
   lineTotal: { ...Typography.labelL, color: Colors.ink },
 
-  /* Footer */
   footer: {
     backgroundColor: Colors.surface,
     paddingHorizontal: Spacing.lg,
@@ -355,7 +416,6 @@ const styles = StyleSheet.create({
   },
   ctaText: { ...Typography.labelL, color: Colors.white, fontSize: 16 },
 
-  /* Empty */
   emptyRoot: { flex: 1, backgroundColor: Colors.surfaceAlt },
   backBtn: {
     margin: Spacing.lg,
@@ -406,4 +466,18 @@ const styles = StyleSheet.create({
     ...Shadow.md,
   },
   shopNowText: { ...Typography.labelL, color: Colors.white, fontSize: 15 },
+  removeBtn: {
+  flexDirection: "row",
+  alignItems: "center",
+  alignSelf: "flex-start",
+  marginTop: Spacing.sm,
+  paddingVertical: 4,
+},
+
+removeText: {
+  marginLeft: 4,
+  color: Colors.danger,
+  fontSize: 13,
+  fontWeight: "600",
+},
 });

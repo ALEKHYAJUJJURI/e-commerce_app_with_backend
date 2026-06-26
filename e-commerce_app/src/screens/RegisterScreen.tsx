@@ -15,20 +15,22 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { Colors, Radius, Shadow, Spacing, Typography } from "../types/theme";
+import { Colors, Radius, Shadow, Spacing } from "../types/theme";
 import { API_BASE_URL } from "../types/constants";
 
 const RegisterScreen = ({ navigation }: any) => {
-  const [name, setName]         = useState("");
-  const [email, setEmail]       = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [secureText, setSecureText] = useState(true);
-  const [loading, setLoading]   = useState(false);
+  const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const btnScale = useRef(new Animated.Value(1)).current;
-  const onPressIn  = () => Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: true }).start();
-  const onPressOut = () => Animated.spring(btnScale, { toValue: 1,    useNativeDriver: true }).start();
+  const onPressIn = () =>
+    Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: true }).start();
+  const onPressOut = () =>
+    Animated.spring(btnScale, { toValue: 1, useNativeDriver: true }).start();
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
@@ -37,14 +39,21 @@ const RegisterScreen = ({ navigation }: any) => {
     }
     setLoading(true);
     try {
-      await axios.post(`${API_BASE_URL}/api/auth/register`, { name, email, password });
-      Alert.alert("Account created!", "You can now sign in with your credentials.", [
-        { text: "Sign In", onPress: () => navigation.navigate("Login") },
-      ]);
+      await axios.post(`${API_BASE_URL}/api/auth/register`, {
+        name,
+        email,
+        password,
+      });
+      Alert.alert(
+        "Account created!",
+        "You can now sign in with your credentials.",
+        [{ text: "Sign In", onPress: () => navigation.navigate("Login") }],
+      );
     } catch (error: any) {
       Alert.alert(
         "Registration failed",
-        error?.response?.data?.message || "Something went wrong. Please try again."
+        error?.response?.data?.message ||
+          "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -61,7 +70,6 @@ const RegisterScreen = ({ navigation }: any) => {
       onChange: setName,
       keyboardType: "default" as const,
       autoCapitalize: "words" as const,
-      secure: false,
     },
     {
       key: "email",
@@ -72,12 +80,19 @@ const RegisterScreen = ({ navigation }: any) => {
       onChange: setEmail,
       keyboardType: "email-address" as const,
       autoCapitalize: "none" as const,
-      secure: false,
     },
   ];
 
   return (
-    <SafeAreaView style={styles.root} edges={["top"]}>
+    <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
+      {navigation.canGoBack() && (
+        <TouchableOpacity
+          style={styles.closeBtn}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="close" size={22} color={Colors.white} />
+        </TouchableOpacity>
+      )}
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -89,7 +104,6 @@ const RegisterScreen = ({ navigation }: any) => {
           enableOnAndroid
           extraScrollHeight={30}
         >
-          {/* ── Hero ─────────────────────────────────── */}
           <LinearGradient
             colors={[Colors.primary, Colors.primaryDark ?? "#1A1A2E"]}
             style={styles.hero}
@@ -107,22 +121,30 @@ const RegisterScreen = ({ navigation }: any) => {
             <View style={styles.decCircle2} />
           </LinearGradient>
 
-          {/* ── Form card ────────────────────────────── */}
           <View style={styles.card}>
             <View style={styles.cardHandle} />
-
             <Text style={styles.cardTitle}>Create account</Text>
-            <Text style={styles.cardSubtitle}>Free forever. No credit card needed.</Text>
+            <Text style={styles.cardSubtitle}>
+              Free forever. No credit card needed.
+            </Text>
 
-            {/* Name & Email fields */}
             {FIELDS.map((field) => (
               <View key={field.key} style={styles.fieldWrap}>
                 <Text style={styles.label}>{field.label}</Text>
-                <View style={[styles.inputWrap, focusedField === field.key && styles.inputWrapFocused]}>
+                <View
+                  style={[
+                    styles.inputWrap,
+                    focusedField === field.key && styles.inputWrapFocused,
+                  ]}
+                >
                   <Ionicons
                     name={field.icon as any}
                     size={18}
-                    color={focusedField === field.key ? Colors.indigo : Colors.inkLight}
+                    color={
+                      focusedField === field.key
+                        ? Colors.indigo
+                        : Colors.inkLight
+                    }
                     style={styles.inputIcon}
                   />
                   <TextInput
@@ -140,14 +162,22 @@ const RegisterScreen = ({ navigation }: any) => {
               </View>
             ))}
 
-            {/* Password */}
             <View style={styles.fieldWrap}>
               <Text style={styles.label}>Password</Text>
-              <View style={[styles.inputWrap, focusedField === "password" && styles.inputWrapFocused]}>
+              <View
+                style={[
+                  styles.inputWrap,
+                  focusedField === "password" && styles.inputWrapFocused,
+                ]}
+              >
                 <Ionicons
                   name="lock-closed-outline"
                   size={18}
-                  color={focusedField === "password" ? Colors.indigo : Colors.inkLight}
+                  color={
+                    focusedField === "password"
+                      ? Colors.indigo
+                      : Colors.inkLight
+                  }
                   style={styles.inputIcon}
                 />
                 <TextInput
@@ -173,7 +203,6 @@ const RegisterScreen = ({ navigation }: any) => {
               </View>
             </View>
 
-            {/* Password strength hint */}
             <View style={styles.strengthRow}>
               {["Weak", "Fair", "Strong"].map((level, i) => (
                 <View
@@ -181,24 +210,33 @@ const RegisterScreen = ({ navigation }: any) => {
                   style={[
                     styles.strengthBar,
                     password.length > i * 3 && {
-                      backgroundColor: i === 0 ? Colors.danger : i === 1 ? Colors.warning : Colors.success,
+                      backgroundColor:
+                        i === 0
+                          ? Colors.danger
+                          : i === 1
+                            ? Colors.warning
+                            : Colors.success,
                     },
                   ]}
                 />
               ))}
               <Text style={styles.strengthLabel}>
-                {password.length === 0 ? "" : password.length < 4 ? "Weak" : password.length < 8 ? "Fair" : "Strong"}
+                {password.length === 0
+                  ? ""
+                  : password.length < 4
+                    ? "Weak"
+                    : password.length < 8
+                      ? "Fair"
+                      : "Strong"}
               </Text>
             </View>
 
-            {/* Terms */}
             <Text style={styles.termsText}>
               By creating an account, you agree to our{" "}
               <Text style={styles.termsLink}>Terms of Service</Text> and{" "}
               <Text style={styles.termsLink}>Privacy Policy</Text>.
             </Text>
 
-            {/* CTA */}
             <Animated.View style={{ transform: [{ scale: btnScale }] }}>
               <TouchableOpacity
                 style={[styles.cta, loading && styles.ctaDisabled]}
@@ -219,14 +257,17 @@ const RegisterScreen = ({ navigation }: any) => {
                   ) : (
                     <>
                       <Text style={styles.ctaText}>Create Account</Text>
-                      <Ionicons name="arrow-forward" size={18} color={Colors.white} />
+                      <Ionicons
+                        name="arrow-forward"
+                        size={18}
+                        color={Colors.white}
+                      />
                     </>
                   )}
                 </LinearGradient>
               </TouchableOpacity>
             </Animated.View>
 
-            {/* Login link */}
             <TouchableOpacity
               style={styles.loginRow}
               onPress={() => navigation.navigate("Login")}
@@ -247,6 +288,18 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: Colors.primary },
   scroll: { flexGrow: 1, justifyContent: "flex-end" },
+  closeBtn: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: Radius.full,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 
   hero: {
     alignItems: "center",
@@ -358,12 +411,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.indigoLight,
   },
   inputIcon: { marginRight: Spacing.sm },
-  inputInner: {
-    flex: 1,
-    fontSize: 15,
-    color: Colors.ink,
-    height: "100%",
-  },
+  inputInner: { flex: 1, fontSize: 15, color: Colors.ink, height: "100%" },
 
   strengthRow: {
     flexDirection: "row",
@@ -393,11 +441,7 @@ const styles = StyleSheet.create({
   },
   termsLink: { color: Colors.indigo, fontWeight: "600" },
 
-  cta: {
-    borderRadius: Radius.md,
-    overflow: "hidden",
-    ...Shadow.md,
-  },
+  cta: { borderRadius: Radius.md, overflow: "hidden", ...Shadow.md },
   ctaGradient: {
     height: 56,
     flexDirection: "row",
@@ -419,5 +463,5 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
   },
   loginLabel: { fontSize: 14, color: Colors.inkMid },
-  loginLink:  { fontSize: 14, fontWeight: "700", color: Colors.indigo },
+  loginLink: { fontSize: 14, fontWeight: "700", color: Colors.indigo },
 });

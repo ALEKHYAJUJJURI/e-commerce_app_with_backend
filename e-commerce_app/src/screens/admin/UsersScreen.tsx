@@ -54,12 +54,12 @@ const UsersScreen = () => {
     ]);
   };
 
-  const handleBlock = async (id: string, isBlocked: boolean) => {
-    try {
-      await axios.patch(`${API_BASE_URL}/api/users/${id}/block`, { isBlocked: !isBlocked });
-      fetchUsers();
-    } catch { Alert.alert("Error", "Block action failed."); }
-  };
+  // const handleBlock = async (id: string, isBlocked: boolean) => {
+  //   try {
+  //     await axios.patch(`${API_BASE_URL}/api/users/${id}/block`, { isBlocked: !isBlocked });
+  //     fetchUsers();
+  //   } catch { Alert.alert("Error", "Block action failed."); }
+  // };
 
   const initials = (name: string) =>
     name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();
@@ -109,7 +109,7 @@ const UsersScreen = () => {
 
         {/* Action buttons */}
         <View style={styles.actions}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.actionBtn, {
               backgroundColor: item.isBlocked ? Colors.successLight : Colors.warningLight,
             }]}
@@ -120,7 +120,7 @@ const UsersScreen = () => {
               size={16}
               color={item.isBlocked ? Colors.success : Colors.warning}
             />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={[styles.actionBtn, { backgroundColor: Colors.dangerLight }]}
