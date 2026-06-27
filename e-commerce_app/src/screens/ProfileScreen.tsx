@@ -163,8 +163,12 @@ const ProfileScreen = () => {
             value={notifications}
             onToggle={setNotifications}
           />
-          <SettingsRow icon="help-circle-outline" label="Help & Support" />
-          <SettingsRow icon="document-text-outline" label="Terms & Privacy" />
+          <SettingsRow icon="help-circle-outline" label="Help & Support"
+           onPress={() => navigation.navigate("HelpSupport")}
+          />
+          <SettingsRow icon="document-text-outline" label="Terms & Privacy"
+            onPress={() => navigation.navigate("TermsPrivacy")}
+          />
         </View>
 
         <View style={styles.menuSection}>

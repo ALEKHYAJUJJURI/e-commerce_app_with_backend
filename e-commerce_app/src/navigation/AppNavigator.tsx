@@ -21,6 +21,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MyOrdersScreen from "../screens/MyOrdersScreen";
 import OrderDetailsScreen from "../screens/Orderdetailsscreen";
 import WishlistScreen from "../screens/WishlistScreen";
+import TermsPrivacyScreen from "../screens/TermsPrivacyScreen";
+import HelpSupportScreen from "../screens/HelpSupportScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -98,6 +100,15 @@ const AppNavigator = () => {
       <Stack.Screen name="MyOrders" component={MyOrdersScreen} />
       <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
       <Stack.Screen name="Wishlist" component={WishlistScreen} />
+      <Stack.Screen
+  name="HelpSupport"
+  component={HelpSupportScreen}
+/>
+
+<Stack.Screen
+  name="TermsPrivacy"
+  component={TermsPrivacyScreen}
+/>
       <Stack.Screen
         name="Login"
         component={LoginScreen}

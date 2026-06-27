@@ -9,6 +9,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { API_BASE_URL } from "../types/constants";
 
 interface User {
   _id: string;
@@ -69,7 +70,7 @@ export const AuthProvider = ({
   ) => {
     try {
       const response = await axios.post(
-        "http://10.132.180.129:5000/api/auth/login",
+        `${API_BASE_URL}/api/auth/login`,
         {
           email,
           password,

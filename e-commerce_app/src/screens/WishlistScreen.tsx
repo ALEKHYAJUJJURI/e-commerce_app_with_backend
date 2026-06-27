@@ -114,8 +114,14 @@ const WishlistScreen = () => {
         colors={["#1A1A2E", "#16213E"]}
         style={styles.header}
       >
+         <TouchableOpacity
+                  style={styles.backBtn}
+                  onPress={() => navigation.goBack()}
+                >
+                  <Ionicons name="chevron-back" size={22} color={Colors.white} />
+                </TouchableOpacity>
         <Text style={styles.heading}>
-          ❤️ My Wishlist
+           My Wishlist
         </Text>
 
         <Text style={styles.subHeading}>
@@ -168,6 +174,14 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xxl,
     borderBottomRightRadius: Radius.xxl,
     marginBottom: Spacing.md,
+
+     flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    paddingBottom: Spacing.xl,
+    gap: Spacing.md,
+  
   },
 
   heading: {
@@ -219,6 +233,14 @@ const styles = StyleSheet.create({
     color: Colors.accent,
     fontWeight: "800",
     fontSize: 17,
+  },
+   backBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: Radius.full,
+    backgroundColor: "rgba(255,255,255,0.15)",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   removeBtn: {
