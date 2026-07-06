@@ -55,9 +55,21 @@ router.get("/", protect, async (req, res) => {
 //
 // Remove Wishlist Item
 //
-router.delete("/:id", protect, async (req, res) => {
+router.delete("/:productId", protect, async (req, res) => {
   try {
-    await Wishlist.findByIdAndDelete(req.params.id);
+    const userId = req.user._id;
+    const productId = req.params.productId;
+
+    const deleted = await Wishlist.deleteOne({
+      user: userId,
+      product: productId,
+    });
+
+    if (deleted.deletedCount === 0) {
+      return res.status(404).json({
+        message: "Item not found in wishlist",
+      });
+    }
 
     res.json({
       message: "Removed from wishlist",

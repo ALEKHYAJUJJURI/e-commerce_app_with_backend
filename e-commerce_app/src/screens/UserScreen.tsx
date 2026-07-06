@@ -50,7 +50,7 @@ const getDiscount = (product: Product): number => {
   return discounts[seed % discounts.length];
 };
 
-// ─── Banner Carousel ──────────────────────────────────────────────────────────
+// ─── Banner Carousel ────
 
 const BANNER_GRADIENTS: [string, string][] = [
   ["#1A1A2E", "#E94560"],
@@ -308,7 +308,7 @@ const bannerStyles = StyleSheet.create({
   dotActive: { width: 18, backgroundColor: Colors.primary ?? "#1A1A2E" },
 });
 
-// ─── Flash Deals ─────────────────────────────────────────────────────────────
+// ─── Flash Deals ────
 
 type FlashDealsProps = { products: Product[]; onPress: (p: Product) => void };
 
@@ -471,7 +471,7 @@ const dealStyles = StyleSheet.create({
   ratingVal: { fontSize: 10, fontWeight: "600", color: Colors.inkMid },
 });
 
-// ─── Scrollable List Header (carousel + deals + results count only) ───────────
+// ─── Scrollable List Header (carousel + deals + results count only) ──
 
 type ListHeaderProps = {
   products: Product[];
@@ -510,7 +510,7 @@ const ListHeaderComponent = React.memo(
   ),
 );
 
-// ─── Main Screen ──────────────────────────────────────────────────────────────
+// ─── Main Screen ───
 
 const UserScreen = () => {
   const navigation = useNavigation<any>();
@@ -647,9 +647,6 @@ const UserScreen = () => {
     (n: number, i: any) => n + (i.quantity || 1),
     0,
   );
-
-  // Stable list header data — passed as props so ListHeaderComponent never
-  // remounts and never causes keyboard dismiss
   const listHeaderData = {
     products,
     filtered,
@@ -659,7 +656,7 @@ const UserScreen = () => {
   };
 
   return (
-    <SafeAreaView style={styles.root}>
+    <SafeAreaView style={styles.root} edges={["top"]}>
       {/* ── Fixed Header (gradient brand bar) ── */}
       <Animated.View
         style={{ opacity: headerOpacity, transform: [{ translateY: headerY }] }}

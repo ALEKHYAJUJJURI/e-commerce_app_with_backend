@@ -243,10 +243,10 @@ export default React.memo(ProductCard);
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
-    backgroundColor: Colors.surface,
-    borderRadius: Radius.lg,
-    overflow: "hidden",
-    ...Shadow.sm,
+    // backgroundColor: Colors.surface,
+    // borderRadius: Radius.lg,
+    // overflow: "hidden",
+    // ...Shadow.sm,
   },
   imageWrap: {
     backgroundColor: Colors.surfaceAlt,
@@ -365,3 +365,5 @@ const styles = StyleSheet.create({
   },
   buyNowText: { fontSize: 11.5, fontWeight: "700", color: Colors.accent },
 });
+
+

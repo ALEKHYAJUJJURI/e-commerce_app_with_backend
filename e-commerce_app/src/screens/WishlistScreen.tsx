@@ -15,23 +15,13 @@ import { useNavigation } from "@react-navigation/native";
 
 import { useWishlist } from "../context/WishlistContext";
 import { API_BASE_URL } from "../types/constants";
-import {
-  Colors,
-  Radius,
-  Shadow,
-  Spacing,
-  Typography,
-} from "../types/theme";
+import { Colors, Radius, Shadow, Spacing, Typography } from "../types/theme";
 import { formatCurrency } from "../utils/formatCurrency";
 
 const WishlistScreen = () => {
   const navigation = useNavigation<any>();
 
-  const {
-    wishlist,
-    fetchWishlist,
-    removeFromWishlist,
-  } = useWishlist();
+  const { wishlist, fetchWishlist, removeFromWishlist } = useWishlist();
 
   useEffect(() => {
     fetchWishlist();
@@ -61,48 +51,29 @@ const WishlistScreen = () => {
         />
 
         <View style={styles.info}>
-          <Text
-            numberOfLines={2}
-            style={styles.title}
-          >
+          <Text numberOfLines={2} style={styles.title}>
             {product.title}
           </Text>
 
-          <Text style={styles.category}>
-            {product.category}
-          </Text>
+          <Text style={styles.category}>{product.category}</Text>
 
-          <Text style={styles.price}>
-            {formatCurrency(product.price)}
-          </Text>
+          <Text style={styles.price}>{formatCurrency(product.price)}</Text>
         </View>
 
         <TouchableOpacity
           style={styles.removeBtn}
           onPress={() =>
-            Alert.alert(
-              "Remove",
-              "Remove from wishlist?",
-              [
-                {
-                  text: "Cancel",
-                  style: "cancel",
-                },
-                {
-                  text: "Remove",
-                  style: "destructive",
-                  onPress: () =>
-                    removeFromWishlist(item._id),
-                },
-              ]
-            )
+            Alert.alert("Remove", "Remove from wishlist?", [
+              { text: "Cancel", style: "cancel" },
+              {
+                text: "Remove",
+                style: "destructive",
+                onPress: () => removeFromWishlist(product._id),
+              },
+            ])
           }
         >
-          <Ionicons
-            name="trash-outline"
-            size={20}
-            color={Colors.danger}
-          />
+          <Ionicons name="trash-outline" size={20} color={Colors.danger} />
         </TouchableOpacity>
       </TouchableOpacity>
     );
@@ -110,23 +81,16 @@ const WishlistScreen = () => {
 
   return (
     <SafeAreaView style={styles.root}>
-      <LinearGradient
-        colors={["#1A1A2E", "#16213E"]}
-        style={styles.header}
-      >
-         <TouchableOpacity
-                  style={styles.backBtn}
-                  onPress={() => navigation.goBack()}
-                >
-                  <Ionicons name="chevron-back" size={22} color={Colors.white} />
-                </TouchableOpacity>
-        <Text style={styles.heading}>
-           My Wishlist
-        </Text>
+      <LinearGradient colors={["#1A1A2E", "#16213E"]} style={styles.header}>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => navigation.goBack()}
+        >
+          <Ionicons name="chevron-back" size={22} color={Colors.white} />
+        </TouchableOpacity>
+        <Text style={styles.heading}>My Wishlist</Text>
 
-        <Text style={styles.subHeading}>
-          {wishlist.length} saved items
-        </Text>
+        <Text style={styles.subHeading}>{wishlist.length} saved items</Text>
       </LinearGradient>
 
       <FlatList
@@ -141,15 +105,9 @@ const WishlistScreen = () => {
         refreshing={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Ionicons
-              name="heart-outline"
-              size={70}
-              color={Colors.inkLight}
-            />
+            <Ionicons name="heart-outline" size={70} color={Colors.inkLight} />
 
-            <Text style={styles.emptyTitle}>
-              Wishlist is Empty
-            </Text>
+            <Text style={styles.emptyTitle}>Wishlist is Empty</Text>
 
             <Text style={styles.emptyText}>
               Save products you love to buy later.
@@ -175,13 +133,12 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: Radius.xxl,
     marginBottom: Spacing.md,
 
-     flexDirection: "row",
+    flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.md,
     paddingBottom: Spacing.xl,
     gap: Spacing.md,
-  
   },
 
   heading: {
@@ -234,7 +191,7 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 17,
   },
-   backBtn: {
+  backBtn: {
     width: 38,
     height: 38,
     borderRadius: Radius.full,

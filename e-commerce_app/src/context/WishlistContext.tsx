@@ -96,29 +96,27 @@ const toggleWishlist = async (product: WishlistItem["product"]) => {
   }
 };
 
-  const removeFromWishlist = async (
-    productId: string
-  ) => {
-    try {
-      const token =
-        await AsyncStorage.getItem("token");
+const removeFromWishlist = async (productId: string) => {
+  try {
+    const token = await AsyncStorage.getItem("token");
 
-      await axios.delete(
-        `${API_BASE_URL}/api/wishlist/${productId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+    await axios.delete(
+      `${API_BASE_URL}/api/wishlist/${productId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     setWishlist(prev =>
-    prev.filter(item => item.product._id !== productId)
-);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+      prev.filter(item => item.product._id !== productId)
+    );
+
+  } catch (error) {
+    console.log(error);
+  }
+};
 
   const clearWishlist = () => {
     setWishlist([]);
