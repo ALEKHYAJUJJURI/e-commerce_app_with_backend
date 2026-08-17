@@ -19,8 +19,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors, Radius, Shadow, Spacing, Typography } from "../../types/theme";
 import { API_BASE_URL } from "@/src/types/constants";
+// import { addProduct, deleteProduct } from "@/src/redux/features/products/productSlice";
+// import { addProduct, updateProduct,deleteProduct,setProducts } from "@/src/redux/features/products/productSlice";
 
+// import {
+//   useAppDispatch
 
+// } from "../../redux/hooks/useAppDispatch";
+// import { useAppSelector } from "../../redux/hooks/useAppSelector";
 
 const CATEGORIES = [
   { key: "men's clothing",   label: "Men",         emoji: "👔" },
@@ -34,6 +40,11 @@ const CATEGORIES = [
 
 const ProductsScreen = () => {
   const [products, setProducts]         = useState<any[]>([]);
+//   const products = useAppSelector(
+//   state => state.products.products
+// );
+
+// const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
 
@@ -47,13 +58,15 @@ const ProductsScreen = () => {
 
   useEffect(() => {
     fetchProducts();
+  //  dispatch(fetchProducts());
     (async () => { await ImagePicker.requestMediaLibraryPermissionsAsync(); })();
   }, []);
 
   const fetchProducts = async () => {
     try {
       const res = await axios.get(`${API_BASE_URL}/api/products`);
-      setProducts(res.data);
+      // setProducts(res.data);
+setProducts(res.data);
     } catch (e) { console.log(e); }
   };
 
@@ -94,6 +107,7 @@ const handleEditPress = (product: any) => {
           try {
             await axios.delete(`${API_BASE_URL}/api/products/${id}`);
             setProducts((p) => p.filter((i) => i._id !== id));
+          // deleteProduct(id);
           } catch (e) { Alert.alert("Error", "Delete failed"); }
         },
       },
@@ -174,6 +188,7 @@ const handleUpdateProduct = async () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setProducts((p) => [response.data, ...p]);
+    // addProduct(response.data);
       resetForm();
       setModalVisible(false);
       Alert.alert("Product added", "The new product is now live in the store.");
@@ -234,7 +249,7 @@ const handleUpdateProduct = async () => {
       <FlatList
         data={products}
         renderItem={renderProduct}
-        keyExtractor={(item) => item._id || item.id?.toString()}
+        keyExtractor={(item) => item._id || item._id?.toString()}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={

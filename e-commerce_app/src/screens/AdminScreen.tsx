@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuth } from "../context/AuthContext";
+// import { useAppDispatch } from "../redux/hooks/useAppDispatch";
+// import { useAppSelector } from "../redux/hooks/useAppSelector";
+// import { logout } from "../redux/features/auth/authSlice";
 import { Colors, Radius, Shadow, Spacing, Typography } from "../types/theme";
 
 type MenuItem = {
@@ -56,6 +59,11 @@ const STAT_CARDS = [
 
 const AdminScreen = () => {
   const { user, logout } = useAuth();
+//   const dispatch = useAppDispatch();
+
+// const { user } = useAppSelector(
+//   state => state.auth
+// );
   const navigation = useNavigation<any>();
 
   const firstName = user?.name?.split(" ")[0] || "Admin";
@@ -74,7 +82,7 @@ const AdminScreen = () => {
             <Text style={styles.greeting}>Good day,</Text>
             <Text style={styles.adminName}>{firstName} 👋</Text>
           </View>
-          <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
+          <TouchableOpacity style={styles.logoutBtn} onPress={() => logout}>
             <Ionicons name="log-out-outline" size={20} color={Colors.accent} />
           </TouchableOpacity>
         </View>

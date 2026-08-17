@@ -13,10 +13,18 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Colors, Radius, Shadow, Spacing, Typography } from "../../types/theme";
 import { API_BASE_URL } from "@/src/types/constants";
+// import { deleteUser } from "@/src/redux/features/user/userSlice";
+// import { fetchUsers } from "@/src/redux/features/user/userSlice";
+// import { useAppDispatch } from "../../redux/hooks/useAppDispatch";
+// import { useAppSelector } from "../../redux/hooks/useAppSelector";
 
+// import {
+//   fetchUsers,
+//   deleteUser,
+// } from "../../redux/features/user/userSlice";
 
 const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
-  admin:          { bg: "#FEF3C7", text: "#92400E" },
+  admin:          { bg: "#FEF3C7", text: "#62402a" },
   user:           { bg: Colors.indigoLight, text: Colors.indigo },
   "delivery agent": { bg: Colors.successLight, text: Colors.success },
 };
@@ -24,9 +32,17 @@ const ROLE_COLORS: Record<string, { bg: string; text: string }> = {
 const UsersScreen = () => {
   const [users, setUsers]   = useState([]);
   const [loading, setLoading] = useState(true);
+//   const dispatch = useAppDispatch();
 
-  useEffect(() => { fetchUsers(); }, []);
-  
+// const { users, loading } = useAppSelector(
+//   state => state.users
+// );
+
+  // useEffect(() => { fetchUsers(); }, []);
+
+  useEffect(() => {
+  fetchUsers();
+}, []);
 
   const fetchUsers = async () => {
     try {
@@ -44,22 +60,19 @@ const UsersScreen = () => {
       { text: "Cancel", style: "cancel" },
       {
         text: "Remove", style: "destructive",
-        onPress: async () => {
-          try {
-            await axios.delete(`${API_BASE_URL}/api/users/${id}`);
-            setUsers((p: any) => p.filter((u: any) => u._id !== id));
-          } catch { Alert.alert("Error", "Could not remove user."); }
+        onPress: () => {
+         
         },
       },
     ]);
   };
 
-  // const handleBlock = async (id: string, isBlocked: boolean) => {
-  //   try {
-  //     await axios.patch(`${API_BASE_URL}/api/users/${id}/block`, { isBlocked: !isBlocked });
-  //     fetchUsers();
-  //   } catch { Alert.alert("Error", "Block action failed."); }
-  // };
+  const handleBlock = async (id: string, isBlocked: boolean) => {
+    try {
+      await axios.patch(`${API_BASE_URL}/api/users/${id}/block`, { isBlocked: !isBlocked });
+      fetchUsers();
+    } catch { Alert.alert("Error", "Block action failed."); }
+  };
 
   const initials = (name: string) =>
     name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase();

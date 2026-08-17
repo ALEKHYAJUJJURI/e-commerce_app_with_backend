@@ -40,24 +40,25 @@ const LoginScreen = () => {
       return;
     }
     setLoading(true);
-    const success = await login(username, password);
+    // const success = await login(username, password);
+    const success = await login(
+  username.trim(),
+  password.trim()
+);
     setLoading(false);
-    if (success) {
-      if (navigation.canGoBack())
-        if (success) {
-          navigation.dispatch(
-            CommonActions.reset({
-              index: 0,
-              routes: [{ name: "MainTabs" }],
-            }),
-          );
-        }
-    } else {
-      Alert.alert(
-        "Sign in failed",
-        "Incorrect email or password. Please try again.",
-      );
-    }
+   if (success) {
+  navigation.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [{ name: "MainTabs" }],
+    })
+  );
+} else {
+  Alert.alert(
+    "Sign in failed",
+    "Incorrect email or password. Please try again."
+  );
+}
   };
 
   return (

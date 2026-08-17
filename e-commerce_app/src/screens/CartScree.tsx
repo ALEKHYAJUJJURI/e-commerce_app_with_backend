@@ -19,11 +19,32 @@ import { Colors, Radius, Shadow, Spacing, Typography } from "../types/theme";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { formatCurrency } from "../utils/formatCurrency";
+// import { useAppDispatch } from "../redux/hooks/useAppDispatch";
+// import { useAppSelector } from "../redux/hooks/useAppSelector";
+
+// import {
+//   addToCart,
+//  decreaseQty,
+//   clearCart,
+//   removeFromCart,
+// } from "../redux/features/cart/cartSlice";
+
+// import { logout } from "../redux/features/auth/authSlice"; // only if needed
 
 
 const CartScreen = () => {
   const { cart, addToCart, decreaseQuantity, clearCart,removeFromCart } = useCart();
   const { user } = useAuth();
+
+//   const dispatch = useAppDispatch();
+
+// const cart = useAppSelector(
+//   state => state.cart.items
+// );
+
+// const user = useAppSelector(
+//   state => state.auth.user
+// );
   const navigation = useNavigation<any>();
 
   const subtotal = cart.reduce(
@@ -125,7 +146,7 @@ const handleCheckout = async () => {
          <View style={styles.qtyRow}>
   <TouchableOpacity
     style={styles.qtyBtn}
-    onPress={() => decreaseQuantity(item._id)}
+    onPress={() =>decreaseQuantity(item._id)}
   >
     <Ionicons name="remove" size={16} color={Colors.ink} />
   </TouchableOpacity>
@@ -181,7 +202,7 @@ const handleCheckout = async () => {
           </Text>
         </View>
         <TouchableOpacity
-          onPress={clearCart}
+          onPress={() => clearCart()}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
         >
           <Text style={styles.clearText}>Clear</Text>
