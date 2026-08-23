@@ -8,15 +8,15 @@ import { WishlistProvider } from "@/src/context/WishlistContext";
 export default function Index() {
   return (
     // <Provider store={store}>
-  <AuthProvider>
-    <CartProvider>
-      <WishlistProvider>
+   <AuthProvider>
+   <CartProvider>
+    <WishlistProvider> 
           
              <AppNavigator/>
      
-      </WishlistProvider>
-    </CartProvider>
-  </AuthProvider>
-    // </Provider>
+    </WishlistProvider>
+     </CartProvider>
+   </AuthProvider> 
+  
   );
 }

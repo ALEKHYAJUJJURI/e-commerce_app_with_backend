@@ -10,12 +10,17 @@ import React, {
   useState,
 } from "react";
 import { API_BASE_URL } from "../types/constants";
+import { signInWithGoogle } from "@/services/firebaseAuth";
+import { signOut } from "firebase/auth";
+import { firebaseAuth } from "../../config/firebase";
 
 interface User {
   _id: string;
   name: string;
   email: string;
   role: "admin" | "user";
+  googleId?: string | null;
+  provider?: string;
 }
 
 interface AuthContextType {
@@ -26,6 +31,7 @@ interface AuthContextType {
     password: string
   ) => Promise<boolean>;
   logout: () => Promise<void>;
+  googleLogin: () => Promise<boolean>;
   setUser: React.Dispatch<
     React.SetStateAction<User | null>
   >;
@@ -44,6 +50,9 @@ export const AuthProvider = ({
     null
   );
   const [loading, setLoading] = useState(true);
+  // --------------------------------
+  // RESTORE USER
+  // --------------------------------
 
   useEffect(() => {
     restoreUser();
@@ -63,7 +72,9 @@ export const AuthProvider = ({
       setLoading(false);
     }
   };
-
+  // --------------------------------
+  // NORMAL LOGIN
+  // --------------------------------
   const login = async (
     email: string,
     password: string
@@ -97,17 +108,96 @@ export const AuthProvider = ({
       return false;
     }
   };
+// --------------------------------
+  // GOOGLE LOGIN
+  // --------------------------------
 
-  const logout = async () => {
+  const googleLogin = async (): Promise<boolean> => {
     try {
-      await AsyncStorage.removeItem("token");
-      await AsyncStorage.removeItem("user");
+      // 1. Sign in with Firebase Google
+      const { idToken } =
+        await signInWithGoogle();
 
-      setUser(null);
-    } catch (error) {
-      console.log("Logout Error:", error);
+      if (!idToken) {
+        console.log(
+          "Google Login Error: Firebase ID token missing"
+        );
+
+        return false;
+      }
+
+      console.log(
+        "Firebase ID Token received"
+      );
+
+      // 2. Send Firebase token to YOUR backend
+      const response = await axios.post(
+        `${API_BASE_URL}/api/auth/google`,
+        {
+          idToken,
+        }
+      );
+
+      // 3. Get YOUR backend JWT + user
+      const { token, user } =
+        response.data;
+
+      console.log(
+        "Google Backend Response:",
+        response.data
+      );
+
+      // 4. Store YOUR backend JWT
+      await AsyncStorage.setItem(
+        "token",
+        token
+      );
+
+      // 5. Store user
+      await AsyncStorage.setItem(
+        "user",
+        JSON.stringify(user)
+      );
+
+      // 6. Update AuthContext
+      setUser(user);
+
+      console.log(
+        "Google Login Successful:",
+        user
+      );
+
+      return true;
+    } catch (error: any) {
+      console.log(
+        "Google Login Error:",
+        error?.response?.data ||
+          error?.message ||
+          error
+      );
+
+      return false;
     }
   };
+const logout = async () => {
+  try {
+    // 1. Sign out from Firebase Google authentication
+    await signOut(firebaseAuth);
+
+    // 2. Remove your backend JWT
+    await AsyncStorage.removeItem("token");
+
+    // 3. Remove stored user
+    await AsyncStorage.removeItem("user");
+
+    // 4. Clear AuthContext
+    setUser(null);
+
+    console.log("Logged out successfully");
+  } catch (error) {
+    console.log("Logout Error:", error);
+  }
+};
 
   return (
     <AuthContext.Provider
@@ -116,6 +206,7 @@ export const AuthProvider = ({
         loading,
         login,
         logout,
+        googleLogin,
         setUser,
       }}
     >

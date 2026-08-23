@@ -18,8 +18,13 @@ import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Colors, Radius, Shadow, Spacing } from "../types/theme";
 import { CommonActions } from "@react-navigation/native";
+import { signInWithGoogle } from "@/services/firebaseAuth";
+import { API_BASE_URL } from "../types/constants";
+import axios from "axios";
+// import AsyncStorage from "@react-native-async-storage/async-storage/lib/typescript/AsyncStorage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const LoginScreen = () => {
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigation = useNavigation<any>();
 
   const [username, setUsername] = useState("");
@@ -60,6 +65,32 @@ const LoginScreen = () => {
   );
 }
   };
+const handleGoogleLogin = async () => {
+  try {
+    const success = await googleLogin();
+
+    if (!success) {
+      console.log("Google login failed");
+      return;
+    }
+
+    console.log("Google login successful");
+
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: "MainTabs" }],
+      }),
+    );
+  } catch (error: any) {
+    console.log(
+      "Google Login Error:",
+      error?.response?.data ||
+        error?.message ||
+        error,
+    );
+  }
+};
 
   return (
     <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
@@ -217,18 +248,22 @@ const LoginScreen = () => {
               <Text style={styles.dividerText}>or</Text>
               <View style={styles.dividerLine} />
             </View>
-
+<TouchableOpacity onPress={handleGoogleLogin}>
+   <Text>Sign in with Google</Text>
+</TouchableOpacity>
             <TouchableOpacity
               style={styles.registerRow}
               onPress={() => navigation.navigate("Register")}
               activeOpacity={0.7}
             >
               <Text style={styles.registerLabel}>New to ShopEase? </Text>
+              
               <Text style={styles.registerLink}>Create account</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAwareScrollView>
       </KeyboardAvoidingView>
+      
     </SafeAreaView>
   );
 };
