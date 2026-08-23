@@ -46,3 +46,5 @@ backend/uploads/*
 *.p12
 *.key
 *.mobileprovision
+# Google/Firebase service account
+backend/config/serviceAccountKey.json

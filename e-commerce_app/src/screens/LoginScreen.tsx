@@ -18,11 +18,8 @@ import { useNavigation } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { Colors, Radius, Shadow, Spacing } from "../types/theme";
 import { CommonActions } from "@react-navigation/native";
-import { signInWithGoogle } from "@/services/firebaseAuth";
-import { API_BASE_URL } from "../types/constants";
-import axios from "axios";
-// import AsyncStorage from "@react-native-async-storage/async-storage/lib/typescript/AsyncStorage";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
+
 const LoginScreen = () => {
   const { login, googleLogin } = useAuth();
   const navigation = useNavigation<any>();
