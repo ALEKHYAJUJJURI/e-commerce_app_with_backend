@@ -11,8 +11,10 @@ import React, {
 } from "react";
 import { API_BASE_URL } from "../types/constants";
 import { signInWithGoogle } from "@/services/firebaseAuth";
-import { signOut } from "firebase/auth";
+
 import { firebaseAuth } from "../../config/firebase";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import { signOut as firebaseSignOut } from "firebase/auth";
 
 interface User {
   _id: string;
@@ -181,21 +183,42 @@ export const AuthProvider = ({
   };
 const logout = async () => {
   try {
-    // 1. Sign out from Firebase Google authentication
-    await signOut(firebaseAuth);
+    // 1. Sign out from Firebase
+    if (firebaseAuth.currentUser) {
+      await firebaseSignOut(firebaseAuth);
+      console.log("Firebase signed out");
+    }
 
-    // 2. Remove your backend JWT
+    // 2. Sign out from Google
+    try {
+      const isSignedIn = await GoogleSignin.hasPreviousSignIn();
+
+      if (isSignedIn) {
+        await GoogleSignin.signOut();
+        console.log("Google signed out");
+      }
+    } catch (googleError) {
+      console.log(
+        "Google Sign-Out Error:",
+        googleError
+      );
+    }
+
+    // 3. Remove backend JWT
     await AsyncStorage.removeItem("token");
 
-    // 3. Remove stored user
+    // 4. Remove stored user
     await AsyncStorage.removeItem("user");
 
-    // 4. Clear AuthContext
+    // 5. Clear AuthContext
     setUser(null);
 
     console.log("Logged out successfully");
   } catch (error) {
-    console.log("Logout Error:", error);
+    console.log(
+      "Logout Error:",
+      error
+    );
   }
 };
 
