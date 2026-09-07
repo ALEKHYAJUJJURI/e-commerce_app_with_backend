@@ -27,6 +27,10 @@ mongoose
     console.log(err);
   });
 
+  router.get("/get", (req, res) => {
+  res.send("GET API working!");
+});
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
