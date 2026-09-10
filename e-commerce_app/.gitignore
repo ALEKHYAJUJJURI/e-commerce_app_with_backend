@@ -9,6 +9,9 @@ dist/
 web-build/
 expo-env.d.ts
 
+# Firebase
+google-services.json
+e-commerce-4387b-firebase-adminsdk-fbsvc-a055064c37.json
 # Native
 .kotlin/
 *.orig.*

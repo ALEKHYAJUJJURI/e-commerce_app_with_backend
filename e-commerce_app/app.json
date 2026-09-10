@@ -20,7 +20,8 @@
         "monochromeImage": "./assets/images/shopping-bag.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "googleServicesFile": "google-services.json"
     },
     "web": {
       "output": "static",
@@ -28,6 +29,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-notifications",
       [
         "expo-splash-screen",
         {
@@ -40,6 +42,7 @@
           }
         }
       ],
+      
       "@react-native-google-signin/google-signin"
     ],
     "experiments": {

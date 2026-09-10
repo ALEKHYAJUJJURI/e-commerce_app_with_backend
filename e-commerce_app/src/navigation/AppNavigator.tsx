@@ -2,7 +2,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
+import { useEffect } from "react";
 
+import {registerFCM} from "../utils/fcmservice";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { Colors } from "../types/theme";
@@ -27,12 +29,14 @@ import HelpSupportScreen from "../screens/HelpSupportScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainTabs = () => {
+const MainTabs = async () => {
   const { cart } = useCart();
   const cartCount = cart.reduce(
     (n: number, i: any) => n + (i.quantity || 1),
     0,
   );
+
+
 
   return (
     <SafeAreaView
@@ -81,7 +85,11 @@ const MainTabs = () => {
 
 const AppNavigator = () => {
   const { user } = useAuth();
-
+ useEffect(() => {
+    if (user) {
+      registerFCM();
+    }
+  }, [user]);
   if (user?.role === "admin") {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
