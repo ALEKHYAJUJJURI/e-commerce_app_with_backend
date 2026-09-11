@@ -15,6 +15,7 @@ import { signInWithGoogle } from "@/services/firebaseAuth";
 import { firebaseAuth } from "../../config/firebase";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { signOut as firebaseSignOut } from "firebase/auth";
+import { getFCMToken } from "../utils/fcmservice";
 
 interface User {
   _id: string;
@@ -101,7 +102,9 @@ export const AuthProvider = ({
         "user",
         JSON.stringify(user)
       );
+  const fcmToken = await getFCMToken();
 
+    console.log("User FCM Token:", fcmToken);
       setUser(user);
 
       return true;
@@ -160,7 +163,10 @@ export const AuthProvider = ({
         "user",
         JSON.stringify(user)
       );
+const fcmToken = await getFCMToken();
+await AsyncStorage.setItem("fcmToken", fcmToken || "");
 
+console.log("Google User FCM Token:", fcmToken);
       // 6. Update AuthContext
       setUser(user);
 

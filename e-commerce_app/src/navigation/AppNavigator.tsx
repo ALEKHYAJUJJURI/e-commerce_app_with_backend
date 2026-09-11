@@ -4,7 +4,6 @@ import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { useEffect } from "react";
 
-import {registerFCM} from "../utils/fcmservice";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { Colors } from "../types/theme";
@@ -25,11 +24,13 @@ import OrderDetailsScreen from "../screens/Orderdetailsscreen";
 import WishlistScreen from "../screens/WishlistScreen";
 import TermsPrivacyScreen from "../screens/TermsPrivacyScreen";
 import HelpSupportScreen from "../screens/HelpSupportScreen";
+import { registerFCMToken,setupFCMListeners } from "../utils/fcmservice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainTabs = async () => {
+const MainTabs =  () => {
   const { cart } = useCart();
   const cartCount = cart.reduce(
     (n: number, i: any) => n + (i.quantity || 1),
@@ -85,11 +86,37 @@ const MainTabs = async () => {
 
 const AppNavigator = () => {
   const { user } = useAuth();
- useEffect(() => {
-    if (user) {
-      registerFCM();
+  useEffect(() => {
+  const unsubscribe = setupFCMListeners();
+
+  return unsubscribe;
+}, []);
+useEffect(() => {
+  const registerToken = async () => {
+    if (!user) return;
+
+    const authToken = await AsyncStorage.getItem("token");
+
+    console.log("👤 User:", user.email);
+    console.log("🔐 Backend token exists:", !!authToken);
+    console.log("🔑 Backend auth token:", authToken);
+
+    if (!authToken) {
+      console.log("❌ No backend auth token found");
+      return;
     }
-  }, [user]);
+
+    const success = await registerFCMToken(authToken);
+
+    console.log(
+      success
+        ? "✅ FCM registration completed"
+        : "❌ FCM registration failed"
+    );
+  };
+
+  registerToken();
+}, [user]);
   if (user?.role === "admin") {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>

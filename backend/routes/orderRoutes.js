@@ -1,7 +1,7 @@
 const express = require("express");
 const Order = require("../models/Order");
 const protect = require("../middleware/authMiddleware");
-
+const { sendNotification } = require("../services/notificationService");
 const router = express.Router();
 
 //
@@ -17,6 +17,31 @@ router.post("/", protect, async (req, res) => {
       totalAmount,
       status: "Pending",
     });
+
+    // Send order placed notification
+    if (req.user.fcmTokens && req.user.fcmTokens.length > 0) {
+      for (const token of req.user.fcmTokens) {
+        try {
+          await sendNotification({
+            token,
+            title: "Order Placed Successfully 🎉",
+            body: `Your order #${order._id
+              .toString()
+              .slice(-8)
+              .toUpperCase()} has been placed successfully.`,
+            data: {
+              type: "ORDER_PLACED",
+              orderId: order._id.toString(),
+            },
+          });
+        } catch (notificationError) {
+          console.log(
+            "Notification failed:",
+            notificationError.message
+          );
+        }
+      }
+    }
 
     res.status(201).json(order);
   } catch (error) {

@@ -5,8 +5,9 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 const router = express.Router();
-const firebaseAuth = require("../config/firebaseAdmin");
+// const firebaseAuth = require("../config/firebaseAdmin");
 
+const { firebaseAuth } = require("../config/firebaseAdmin");
 //
 // REGISTER
 //

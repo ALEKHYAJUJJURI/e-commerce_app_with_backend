@@ -11,7 +11,7 @@ const authRoutes =
   const productRoutes = require("./routes/productRoutes");
   const orderRoutes = require("./routes/orderRoutes");
   const wishlistRoutes = require("./routes/wishlistRoutes");
-  
+  const notificationRoutes = require("./routes/notificationRoutes");
 
 const app = express();
 
@@ -42,6 +42,7 @@ app.use(
     path.join(__dirname, "uploads")
   )
 );
+app.use("/api/notifications", notificationRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(
