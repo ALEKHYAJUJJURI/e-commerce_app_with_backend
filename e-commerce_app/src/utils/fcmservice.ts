@@ -5,8 +5,31 @@ import {
   onMessage,
 } from "@react-native-firebase/messaging";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import notifee, {
+  AndroidImportance, AuthorizationStatus
+} from "@notifee/react-native";
 import { API_BASE_URL } from "../types/constants";
+
+
+export const requestNotificationPermission = async () => {
+  try {
+    const settings = await notifee.requestPermission();
+
+    if (
+      settings.authorizationStatus === AuthorizationStatus.AUTHORIZED ||
+      settings.authorizationStatus === AuthorizationStatus.PROVISIONAL
+    ) {
+      console.log("✅ Notification permission granted");
+      return true;
+    }
+
+    console.log("❌ Notification permission denied");
+    return false;
+  } catch (error) {
+    console.log("Notification permission error:", error);
+    return false;
+  }
+};
 
 export const getFCMToken = async () => {
   try {
@@ -25,6 +48,14 @@ export const getFCMToken = async () => {
 
 export const registerFCMToken = async (authToken: string) => {
   try {
+ // Ask for notification permission first
+    const permissionGranted = await requestNotificationPermission();
+
+    if (!permissionGranted) {
+      console.log("⚠️ Notification permission not granted");
+      return false;
+    }
+
     const fcmToken = await getFCMToken();
 
     if (!fcmToken) {
@@ -74,6 +105,38 @@ export const setupFCMListeners = () => {
         "📦 Data:",
         remoteMessage.data
       );
+
+      const title =
+        remoteMessage.notification?.title ||
+        "E-Commerce App";
+
+      const body =
+        remoteMessage.notification?.body ||
+        "You have a new notification.";
+
+      // Create Android notification channel
+      const channelId = await notifee.createChannel({
+        id: "orders",
+        name: "Orders",
+        importance: AndroidImportance.HIGH,
+      });
+
+      // Display notification
+      await notifee.displayNotification({
+        title,
+        body,
+        data: remoteMessage.data,
+
+        android: {
+          channelId,
+          importance: AndroidImportance.HIGH,
+          pressAction: {
+            id: "default",
+          },
+        },
+      });
+
+      console.log("✅ Local notification displayed");
     },
   );
 

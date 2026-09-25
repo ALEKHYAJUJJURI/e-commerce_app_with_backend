@@ -24,20 +24,18 @@ import OrderDetailsScreen from "../screens/Orderdetailsscreen";
 import WishlistScreen from "../screens/WishlistScreen";
 import TermsPrivacyScreen from "../screens/TermsPrivacyScreen";
 import HelpSupportScreen from "../screens/HelpSupportScreen";
-import { registerFCMToken,setupFCMListeners } from "../utils/fcmservice";
+import { registerFCMToken, setupFCMListeners } from "../utils/fcmservice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const MainTabs =  () => {
+const MainTabs = () => {
   const { cart } = useCart();
   const cartCount = cart.reduce(
     (n: number, i: any) => n + (i.quantity || 1),
     0,
   );
-
-
 
   return (
     <SafeAreaView
@@ -87,36 +85,36 @@ const MainTabs =  () => {
 const AppNavigator = () => {
   const { user } = useAuth();
   useEffect(() => {
-  const unsubscribe = setupFCMListeners();
+    const unsubscribe = setupFCMListeners();
 
-  return unsubscribe;
-}, []);
-useEffect(() => {
-  const registerToken = async () => {
-    if (!user) return;
+    return unsubscribe;
+  }, []);
+  useEffect(() => {
+    const registerToken = async () => {
+      if (!user) return;
 
-    const authToken = await AsyncStorage.getItem("token");
+      const authToken = await AsyncStorage.getItem("token");
 
-    console.log("👤 User:", user.email);
-    console.log("🔐 Backend token exists:", !!authToken);
-    console.log("🔑 Backend auth token:", authToken);
+      console.log("👤 User:", user.email);
+      console.log("🔐 Backend token exists:", !!authToken);
+      console.log("🔑 Backend auth token:", authToken);
 
-    if (!authToken) {
-      console.log("❌ No backend auth token found");
-      return;
-    }
+      if (!authToken) {
+        console.log("❌ No backend auth token found");
+        return;
+      }
 
-    const success = await registerFCMToken(authToken);
+      const success = await registerFCMToken(authToken);
 
-    console.log(
-      success
-        ? "✅ FCM registration completed"
-        : "❌ FCM registration failed"
-    );
-  };
+      console.log(
+        success
+          ? "✅ FCM registration completed"
+          : "❌ FCM registration failed",
+      );
+    };
 
-  registerToken();
-}, [user]);
+    registerToken();
+  }, [user]);
   if (user?.role === "admin") {
     return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -135,15 +133,9 @@ useEffect(() => {
       <Stack.Screen name="MyOrders" component={MyOrdersScreen} />
       <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
       <Stack.Screen name="Wishlist" component={WishlistScreen} />
-      <Stack.Screen
-  name="HelpSupport"
-  component={HelpSupportScreen}
-/>
+      <Stack.Screen name="HelpSupport" component={HelpSupportScreen} />
 
-<Stack.Screen
-  name="TermsPrivacy"
-  component={TermsPrivacyScreen}
-/>
+      <Stack.Screen name="TermsPrivacy" component={TermsPrivacyScreen} />
       <Stack.Screen
         name="Login"
         component={LoginScreen}
