@@ -92,6 +92,7 @@ export const AuthProvider = ({
       );
 
       const { token, user } = response.data;
+      console.log("Login Response:", response.data);
 
       await AsyncStorage.setItem(
         "token",
